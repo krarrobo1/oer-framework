@@ -60,6 +60,7 @@ export const ResourceList = () => {
             const key = await resourceListContract.methods.resourceIndex(i).call({ from: accounts[0] });
             let resource = await resourceListContract.methods.resources(key).call({ from: accounts[0] });
             resource.title = web3.utils.hexToUtf8(resource.title);
+            resource.author = web3.utils.hexToUtf8(resource.author);
             resource.timestamp = timeConverter(resource.timestamp);
             table.push(resource);
         }
@@ -76,7 +77,8 @@ export const ResourceList = () => {
                     <thead>
                         <tr>
                             <th scope="col">Title</th>
-                            <th scope="col">Ipfs Hash</th>
+                            <th scope="col">Author</th>
+                            <th scope="col">Description</th>
                             <th scope="col">Timestamp</th>
                             <th scope="col">License</th>
                         </tr>
@@ -86,6 +88,7 @@ export const ResourceList = () => {
                             resourceList.map((row, idx) => (
                                 <tr key={idx}>
                                     <td key={row.title}>{row.title}</td>
+                                    <td key={row.author}>{row.author}</td>
                                     <td key={row.filehash}>
                                         <Link to={{ pathname: `/resource/${row.filehash}` }}>
                                             Explore

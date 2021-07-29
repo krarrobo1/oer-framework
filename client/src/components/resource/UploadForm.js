@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect } from 'react';
+import React, { useContext, useState, useEffect, useMemo } from 'react';
 import Button from 'react-bootstrap/Button';
 import Col from 'react-bootstrap/Col';
 import Form from 'react-bootstrap/Form';
@@ -18,9 +18,8 @@ import { Link } from 'react-router-dom';
 import { Upload } from './form/Upload';
 import { getRdfDescription } from '../../helpers/rdfParser';
 
-
-
-export const UploadForm = ({ originalResource }) => {
+// TODO: Pensar como gestionar las adaptaciones, pasar params y hacer el call en los SC.
+export const UploadForm = ({ originalResource, adaptation, originalhash }) => {
     const { web3, ipfs, accounts, resourceListContract, user } = useContext(BlockchainContext);
     const [licenseId, changeLicenseId] = useState(0)
 
@@ -52,6 +51,7 @@ export const UploadForm = ({ originalResource }) => {
         e.preventDefault();
         if (isFormValid()) {
             const ipfsTitle = web3.utils.utf8ToHex(title);
+            const ipfsAuthor = web3.utils.utf8ToHex(author);
             try {
 
                 await ipfs.add(file, async (err, data) => {
@@ -61,16 +61,30 @@ export const UploadForm = ({ originalResource }) => {
                     const ipfsDescription = await getRdfDescription({ ...formState, filehash: hash });
 
                     try {
-                        await resourceListContract.methods.addResource(
-                            ipfsTitle,
-                            ipfsHash,
-                            ipfsDescription,
-                            license,
-                            remixOf,
-                            remixComment
-                        ).send({
-                            from: accounts[0]
-                        })
+                        if(!adaptation){
+                            await resourceListContract.methods.addResource(
+                                ipfsTitle,
+                                ipfsAuthor,
+                                ipfsHash,
+                                ipfsDescription,
+                                license,
+                            ).send({
+                                from: accounts[0]
+                            })
+                        }else{
+                            await resourceListContract.methods.addAdaptation(
+                                ipfsTitle,
+                                ipfsAuthor,
+                                ipfsHash,
+                                ipfsDescription,
+                                license,
+                                adaptation.adaptation,
+                                originalhash,
+                                adaptation.comment
+                            ).send({
+                                from: accounts[0]
+                            })
+                        }
                         Swal.fire("Resource Added", "You've uploaded a new resource", "success")
                     } catch (error) {
                         console.log(error);
@@ -236,4 +250,4 @@ export const UploadForm = ({ originalResource }) => {
 
         </Form>
     )
-}
+};

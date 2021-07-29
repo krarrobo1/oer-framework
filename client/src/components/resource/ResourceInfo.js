@@ -41,7 +41,7 @@ export const ResourceInfo = () => {
     const loadResource = async () => {
         try {
             let resourceData = await resourceListContract.methods.resources(id).call({ from: accounts[0] });
-            let desc = await getRdfDescription(resourceData.description);
+            let desc = await getRdfDescription(resourceData.descriptionhash);
             setResource(resourceData);
             setDescription(desc);
             setLoading(false);
@@ -71,11 +71,11 @@ export const ResourceInfo = () => {
                                             <VersionHistory
                                                 web3={web3}
                                                 filehash={description.filehash}
-                                                contractAddress={resourceListContract.adress} />
+                                                resourceListContract={resourceListContract} />
                                             <UsageHistory
                                                 web3={web3}
                                                 filehash={description.filehash}
-                                                contractAddress={resourceListContract.adress} />
+                                                resourceListContract={resourceListContract} />
                                         </Col>
                                         <Col>
                                             <Link to={{ pathname: `/remix/${description.filehash}`, originalResource: description }}>

@@ -85,6 +85,25 @@ export const licenses = [
 
 ];
 
+export const adaptations = [
+    {
+        id: 0,
+        title: 'Remix',
+    },
+    {
+        id: 1,
+        title: 'Correction'
+    },
+    {
+        id: 2,
+        title: 'Derived Copy'
+    },
+    {
+        id: 3,
+        title: 'Translation'
+    }
+]
+
 export let licenseMap = new Map();
 
 licenseMap.set('by', { id: 0, url: 'https://creativecommons.org/licenses/by/3.0/es'});

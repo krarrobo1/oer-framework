@@ -44,19 +44,27 @@ export const RegisterForm = () => {
     }
 
     return (
-        <Form onSubmit={handleRegister}>
-            <Form.Group>
-                <Form.Label>Name</Form.Label>
-                <Form.Control
-                    type="name"
-                    name="name"
-                    placeholder="Enter your name"
-                    onChange={handleInputChange}
-                    value={name} />
-            </Form.Group>
-            <Button variant="primary" type="submit">
-                Register
-            </Button>
-        </Form>
+        <>
+            <div className="mt-5">
+                <h3>Welcome</h3>
+                <span>Please register to continue</span>
+            </div>
+            <div className="mt-5">
+                <Form onSubmit={handleRegister}>
+                    <Form.Group>
+                        <Form.Label>Name</Form.Label>
+                        <Form.Control
+                            type="name"
+                            name="name"
+                            placeholder="Enter your name"
+                            onChange={handleInputChange}
+                            value={name} />
+                    </Form.Group>
+                    <Button variant="primary" type="submit">
+                        Register
+                    </Button>
+                </Form>
+            </div>
+        </>
     )
 }
