@@ -112,7 +112,7 @@ licenseMap.set('by-sa', { id: 2, url: 'https://creativecommons.org/licenses/by-s
 licenseMap.set('by-nc', { id: 3, url: 'https://creativecommons.org/licenses/by-nc/3.0/es', abbr: 'by-nc'});
 licenseMap.set('by-nc-sa', { id: 4, url: 'https://creativecommons.org/licenses/by-nc-sa/3.0/es', abbr: 'by-nc-sa'});
 licenseMap.set('by-nc-nd', { id: 5, url: 'https://creativecommons.org/licenses/by-nc-nd/3.0/es', abbr: 'by-nc-nd'});
-licenseMap.set('zero', { id: 6, url: 'https://creativecommons.org/publicdomain/zero/1.0/deed.es_ES'});
+licenseMap.set('publicdomain', { id: 6, url: 'https://creativecommons.org/publicdomain/zero/1.0/deed.es_ES'});
 
 
 export const materialTypes = [

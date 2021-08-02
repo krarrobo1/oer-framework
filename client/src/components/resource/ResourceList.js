@@ -1,5 +1,4 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { Pagination } from 'react-bootstrap';
 import Col from 'react-bootstrap/Col';
 import Table from 'react-bootstrap/Table';
 import { Link } from 'react-router-dom';
@@ -28,17 +27,6 @@ export const ResourceList = () => {
         }
     }, []);
 
-    const handlePagination = () => {
-        let pageItems = [];
-        for (let number = 1; number <= pageNumber; number++) {
-            pageItems.push(
-                <Pagination.Item key={number} active={number === active}>
-                    {number}
-                </Pagination.Item>,
-            );
-        }
-        setItems(pageItems);
-    }
 
     const fetchResources = async () => {
         let table = [];

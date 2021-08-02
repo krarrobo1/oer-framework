@@ -55,6 +55,8 @@ export const UploadForm = ({ originalResource, adaptation, originalhash }) => {
             try {
 
                 await ipfs.add(file, async (err, data) => {
+
+                    console.log(`ERROR => ${err}`);
                     const { hash } = data[0];
                     const ipfsHash = hash;
                    

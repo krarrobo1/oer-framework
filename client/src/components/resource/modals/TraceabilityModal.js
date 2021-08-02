@@ -1,18 +1,18 @@
-import React, { useState } from 'react'
-import { useForm } from '../../../hooks/useForm';
+import React, { useState } from 'react';
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
-import { UsageForm } from '../UsageForm';
 import Swal from 'sweetalert2';
-import { IPFSURL } from '../../../types/constants'
+import { useForm } from '../../../hooks/useForm';
+import { IPFSURL } from '../../../types/constants';
+import { UsageForm } from '../UsageForm';
 
 
 
 export const TraceabilityModal = ({ show, setShow, filehash, from, contract }) => {
-    
+
     const [trace, setTrace] = useState(false);
 
-    const [formState, handleInputChange, reset] = useForm({
+    const [formState, handleInputChange] = useForm({
         comment: '',
         usage: ''
     });
@@ -74,24 +74,24 @@ export const TraceabilityModal = ({ show, setShow, filehash, from, contract }) =
                             href={`${IPFSURL}${filehash}`}
                         >
                             Download
-                    </a>
+                        </a>
                         <Button
                             variant="primary"
                             onClick={handleTrace}>
                             Sure
-                </Button>
+                        </Button>
                     </> :
                     <>
                         <Button variant="secondary" onClick={handleClose}>
                             Cancel
-                    </Button>
+                        </Button>
                         <Button
                             type="submit"
                             variant="primary"
                             onClick={handleSubmit}
                         >
                             Submit and Download
-                    </Button>
+                        </Button>
                     </>
                 }
             </Modal.Footer>
