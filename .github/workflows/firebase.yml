@@ -28,21 +28,18 @@ jobs:
     #- run: npm install -g yarn
     - name: npm install, build and test
       run: | 
-        npm install 
-        npm run build
-      working-directory: ./client
+        npm install --prefix ./client
+        npm run build --prefix ./client
       
     - name: print directory
       run: |
         ls -R
-      working-directory: ./client
         
     - name: Archive Build
       uses: actions/upload-artifact@v2
       with:
         name: build
-        path: build
-      working-directory: ./client
+        path: ./client/build
   deploy:
     name: Deploy
     needs: build
