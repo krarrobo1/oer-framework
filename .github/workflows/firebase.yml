@@ -13,7 +13,8 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
-
+    env:
+      working-directory: ./client
     strategy:
       matrix:
         node-version: [14.x]
@@ -28,14 +29,22 @@ jobs:
         cache: 'npm'
     #- run: npm install -g yarn
     - name: npm install, build and test
-      run: 
+      run: | 
         npm install --prefix ./client
         npm run build --prefix ./client
+      working-directory: ${{env.working_directory}}
+      
+    - name: print directory
+      run: |
+        ls -R
+      working-directory: ${{env.working_directory}}
+        
     - name: Archive Build
       uses: actions/upload-artifact@v2
       with:
         name: build
-        path: client/build
+        path: build
+      working-directory: ${{env.working_directory}}
   deploy:
     name: Deploy
     needs: build
