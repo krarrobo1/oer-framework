@@ -29,13 +29,13 @@ jobs:
     - run: npm install -g yarn
     - name: yarn install, build and test
       run: 
-        yarn add
-        yarn build
+        yarn --cwd client/ 
+        yarn --cwd client/ build
     - name: Archive Build
       uses: actions/upload-artifact@v2
       with:
         name: build
-        path: build 
+        path: client/build 
   deploy:
     name: Deploy
     needs: build
@@ -46,7 +46,7 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: build
-          path: build
+          path: client/build
       - name: Deploy to Firebase
         uses: w9jds/firebase-action@master
         with:
