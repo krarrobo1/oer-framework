@@ -5,13 +5,17 @@ import Alert from 'react-bootstrap/Alert';
 import { AiOutlineHistory } from 'react-icons/ai';
 import { UsageItem } from '../items/UsageItem';
 
-export const UsageHistory = ({ web3, filehash, contractAddress }) => {
+export const UsageHistory = ({ web3, filehash, resourceListContract }) => {
     const [show, setShow] = useState(false);
     const [logs, setLogs] = useState([]);
 
+
     useEffect(() => {
-        getUsageLogs();
-    }, [filehash])
+        if(resourceListContract){
+            getUsageLogs();
+            // handleUsageEvents();
+        }
+    }, [filehash, resourceListContract])
 
     const handleClose = () => {
         setShow(false);
@@ -20,12 +24,33 @@ export const UsageHistory = ({ web3, filehash, contractAddress }) => {
         setShow(true);
     }
 
+    const handleUsageEvents = async () =>{
+        resourceListContract.events.ResourceUsed({
+            fromBlock: 0
+        }, function(err, event){ console.log(event)})
+        .on('data', (evt) =>{
+            console.log("used", { evt });
+            let { returnValues } = evt;
+            let data = {
+                user: returnValues['1'],
+                usage:  returnValues['2'],
+                comment: returnValues['3'],
+                timestamp: returnValues['4']
+            }
+            setLogs([ ...logs, data]);
+        })
+        .on('changed', (evt) =>{
+            console.log("changed");
+        })
+        .on('error', console.error)
+    }
+
     const getUsageLogs = async () => {
         let encodedHash = web3.utils.soliditySha3(filehash);
         let encodedEvent = web3.utils.soliditySha3("ResourceUsed(string,address,uint8,string,uint256)");
         let topics = [encodedEvent, encodedHash];
         let logs = await web3.eth.getPastLogs({
-            address: contractAddress,
+            address: resourceListContract.address,
             fromBlock: 0,
             topics
         });
@@ -54,6 +79,7 @@ export const UsageHistory = ({ web3, filehash, contractAddress }) => {
                 }
             ], logs[i].data, topics)
         }
+        console.log(logs);
         setLogs(logs);
     }
 
@@ -67,9 +93,7 @@ export const UsageHistory = ({ web3, filehash, contractAddress }) => {
                 <Modal.Body>
                     {
                         logs.length > 0 ?
-                            (<ul>
-                                {logs.map((log, i) => (<UsageItem log={log} i={i} />))}
-                            </ul>)
+                            logs.map((log, i) => (<UsageItem log={log} i={i} />))
                             :
                             <Alert variant="secondary">
                                 No logs available...

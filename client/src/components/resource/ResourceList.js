@@ -1,5 +1,4 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { Pagination } from 'react-bootstrap';
 import Col from 'react-bootstrap/Col';
 import Table from 'react-bootstrap/Table';
 import { Link } from 'react-router-dom';
@@ -28,17 +27,6 @@ export const ResourceList = () => {
         }
     }, []);
 
-    const handlePagination = () => {
-        let pageItems = [];
-        for (let number = 1; number <= pageNumber; number++) {
-            pageItems.push(
-                <Pagination.Item key={number} active={number === active}>
-                    {number}
-                </Pagination.Item>,
-            );
-        }
-        setItems(pageItems);
-    }
 
     const fetchResources = async () => {
         let table = [];
@@ -60,6 +48,7 @@ export const ResourceList = () => {
             const key = await resourceListContract.methods.resourceIndex(i).call({ from: accounts[0] });
             let resource = await resourceListContract.methods.resources(key).call({ from: accounts[0] });
             resource.title = web3.utils.hexToUtf8(resource.title);
+            resource.author = web3.utils.hexToUtf8(resource.author);
             resource.timestamp = timeConverter(resource.timestamp);
             table.push(resource);
         }
@@ -76,7 +65,8 @@ export const ResourceList = () => {
                     <thead>
                         <tr>
                             <th scope="col">Title</th>
-                            <th scope="col">Ipfs Hash</th>
+                            <th scope="col">Author</th>
+                            <th scope="col">Description</th>
                             <th scope="col">Timestamp</th>
                             <th scope="col">License</th>
                         </tr>
@@ -86,6 +76,7 @@ export const ResourceList = () => {
                             resourceList.map((row, idx) => (
                                 <tr key={idx}>
                                     <td key={row.title}>{row.title}</td>
+                                    <td key={row.author}>{row.author}</td>
                                     <td key={row.filehash}>
                                         <Link to={{ pathname: `/resource/${row.filehash}` }}>
                                             Explore

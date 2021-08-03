@@ -1,102 +1,133 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.4.16 <0.9.0;
 
-// Gestiona los recursos.
-contract ResourceList {
-   
+contract ResourceList{
+   // Representa el REA
     struct Resource {
-        address publisher;
+        address provider;
         bytes32 title;
-        string filehash; // content addressable identifier.
-        string description; // content description identifier.
-        uint256 timestamp; // date added
+        bytes32 author;
+        string filehash; 
+        string descriptionhash; 
+        uint256 timestamp; 
         ResourceList.Licenses license;
-        string remixOf; // remix hash
+        string remixOf;
     }
-
+    // Enumera las licencias CC.
     enum Licenses {
         Attribution,
-        Attribution_No_Derivative_Works,
-        Attribution_Share_Alike,
-        Attribution_Non_Commercial,
-        Attribution_Non_Commercial_Share_Alike,
-        Attribution_Non_Commercial_No_Derivatives,
-        Public_Domain
+        AttributionNoDerivativeWorks,
+        AttributionShareAlike,
+        AttributionNonCommercial,
+        AttributionNonCommercialShareAlike,
+        AttributionNonCommercialNoDerivatives,
+        PublicDomain
     }
-
-    // Uso es utilizar tal cual el recurso, reuso es cambiar la intencion que le pretendes dar
+    // Enumera los usos.
     enum Usages {
-        teaching,
-        self_learning,
-        assesment,
-        course_preparation,
-        lecture_class
+        Teaching,
+        SelfLearning,
+        Assesment,
+        CoursePreparation,
+        LectureClass
     }
 
-    // uint256 public constant maxAmountOfVotes = 1000;
-
+    // Enumera las adaptaciones.
+    enum Adaptation {
+        Remix,
+        Correction,
+        DerivedCopy,
+        Translation
+    }
+    // mapping to store Resources.
     mapping(string => Resource) public resources;
 
-    // mapping(string => address) public votes;
-
+    // array used for knowing resourceIndex.
     string[] public resourceIndex;
 
-    // Resource Management
-    event ResourceAdded(address indexed publisher , string indexed filehash, uint256 timestamp);
+    // Modifiers
+    modifier resourceExists (string memory filehash){
+      require(!(resources[filehash].title == 0x0), "Resource doesn't exist");
+      _;
+   }
 
-    // Resource Tracking
+    // Events
+    // Register Resource Usage Log
     event ResourceUsed(
         string indexed resource,
-        address user,
+        address consumer,
         Usages usage,
         string comment,
         uint256 timestamp
     );
 
-    event ResourceAdapted( // Falta el tiempo
+    // Register Resource Adaptation Log
+    event ResourceAdapted( 
         string indexed resource,
-        address user,
-        string remix,
+        address consumer,
+        string adaptatedResource,
         string comment,
+        Adaptation adaptation,
         uint256 timestamp
     );
 
+    // Add Resource
     function addResource(
         bytes32 _title,
+        bytes32 _author,
         string memory _filehash,
-        string memory _description,
-        Licenses _license,
-        string memory _remixOf,
-        string memory remixComment
+        string memory _descriptionhash,
+        Licenses _license
     ) public returns (bool success) {
         Resource memory newResource =
             Resource(
                 msg.sender,
                 _title,
+                _author,
                 _filehash,
-                _description,
+                _descriptionhash,
+                block.timestamp,
+                _license,
+                ""
+            );
+        resources[_filehash] = newResource;
+        resourceIndex.push(_filehash);
+        return true;
+    }
+
+    // Add Resource Adaptation
+   function addAdaptation(
+        bytes32 _title,
+        bytes32 _author,
+        string memory _filehash,
+        string memory _descriptionhash,
+        Licenses _license,
+        Adaptation _adaptation,
+        string memory _remixOf,
+        string memory _comment
+    ) public 
+    resourceExists(_remixOf)
+    returns (bool success) {
+        Resource memory newResource =
+            Resource(
+                msg.sender,
+                _title,
+                _author,
+                _filehash,
+                _descriptionhash,
                 block.timestamp,
                 _license,
                 _remixOf
             );
         resources[_filehash] = newResource;
         resourceIndex.push(_filehash);
-
-        emit ResourceAdded(msg.sender, _filehash, block.timestamp);
-
-        if (bytes(_remixOf).length != 0) {
-            // Check if original file exists.
-            require(
-                !(resources[_remixOf].title == 0x0),
-                "Remix file doesn't exist."
-            );
-            emit ResourceAdapted(_remixOf, msg.sender, _filehash, remixComment, block.timestamp);
-        }
-        return true;
+        
+        emit ResourceAdapted(_remixOf, msg.sender, _filehash, _comment,_adaptation, block.timestamp);
     }
 
     function registerUsage(string memory _resource, Usages  _usage, string memory _comment )
         external
+        resourceExists(_resource)
         returns (bool success)
     {
         emit ResourceUsed(_resource, msg.sender, _usage, _comment,block.timestamp);

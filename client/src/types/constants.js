@@ -22,8 +22,8 @@ const NETWORKS = {
     }
   }
   
-//   const IPFSURL = 'https://gateway.ipfs.io/ipfs/'
-const IPFSURL = 'http://localhost:8080/ipfs/'
+  const IPFSURL = 'https://gateway.ipfs.io/ipfs/'
+// const IPFSURL = 'http://localhost:8080/ipfs/'
 const SITEURL = "http://oerworld.com/";
 export { NETWORKS, IPFSURL, SITEURL };
   // https://gateway.ipfs.io/ipfs/QmZb7crH2YYqwvq5d2pCjZxAovzqXkhWwnEE993UM4jikk

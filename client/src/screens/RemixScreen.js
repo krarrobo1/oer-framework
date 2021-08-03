@@ -2,7 +2,8 @@ import React from 'react'
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Swal from 'sweetalert2';
-import { UploadForm } from '../components/resource/UploadForm'
+
+import { RemixForm } from '../components/resource/RemixForm';
 
 export const RemixScreen = (props) => {
     const{originalResource} = props.location;
@@ -12,8 +13,11 @@ export const RemixScreen = (props) => {
                 <h3>Remix form</h3>
                 <hr />
             </Col>
+            <Col sm={12}>
+                <RemixForm originalResource={originalResource}> </RemixForm>
+            </Col>
             <Col>
-                <UploadForm originalResource={originalResource} />
+                
             </Col>
         </Row>
     )

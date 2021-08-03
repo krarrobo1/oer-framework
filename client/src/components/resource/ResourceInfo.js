@@ -41,7 +41,8 @@ export const ResourceInfo = () => {
     const loadResource = async () => {
         try {
             let resourceData = await resourceListContract.methods.resources(id).call({ from: accounts[0] });
-            let desc = await getRdfDescription(resourceData.description);
+            let desc = await getRdfDescription(resourceData.descriptionhash);
+            console.log(desc);
             setResource(resourceData);
             setDescription(desc);
             setLoading(false);
@@ -71,11 +72,11 @@ export const ResourceInfo = () => {
                                             <VersionHistory
                                                 web3={web3}
                                                 filehash={description.filehash}
-                                                contractAddress={resourceListContract.adress} />
+                                                resourceListContract={resourceListContract} />
                                             <UsageHistory
                                                 web3={web3}
                                                 filehash={description.filehash}
-                                                contractAddress={resourceListContract.adress} />
+                                                resourceListContract={resourceListContract} />
                                         </Col>
                                         <Col>
                                             <Link to={{ pathname: `/remix/${description.filehash}`, originalResource: description }}>
@@ -117,7 +118,7 @@ export const ResourceInfo = () => {
                                     </Col>
                                     <Col xs={12} className="mt-3">
                                         <span className="font-weight-bold">License: </span> {licenses[licenseMap.get(description.licenseAbbr).id].title}
-                                        <a className="ml-2" rel="license" href={description.license}><img alt="Licencia Creative Commons" style={{ borderWidth: 0 }} src={`https://i.creativecommons.org/l/${description.licenseAbbr}/4.0/88x31.png`} /></a>
+                                        <a className="ml-2" rel="license" href={description.license}><img alt="Licencia Creative Commons" style={{ borderWidth: 0 }} src={ description.licenseAbbr != "publicdomain" ? `https://i.creativecommons.org/l/${description.licenseAbbr}/4.0/88x31.png` : `https://licensebuttons.net/l/publicdomain/88x31.png`} /></a>
                                     </Col>
                                     <Col xs={12}>
                                         <span className="font-weight-bold">Language </span> {description.language}

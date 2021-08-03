@@ -5,9 +5,11 @@ import Alert from 'react-bootstrap/Alert';
 import { AiOutlineHistory } from 'react-icons/ai';
 import { TraceItem } from '../items/TraceItem';
 
-export const VersionHistory = ({ web3, filehash, contractAddress }) => {
+export const VersionHistory = ({ web3, filehash, resourceListContract }) => {
     const [show, setShow] = useState(false)
     const [logs, setLogs] = useState([]);
+
+    const contractAddress = resourceListContract.address;
 
     useEffect(() => {
         const encodedHash = web3.utils.soliditySha3(filehash);
@@ -21,41 +23,10 @@ export const VersionHistory = ({ web3, filehash, contractAddress }) => {
     const handleOpen = () => {
         setShow(true);
     }
-
-    // const getResourceAddedLog = async (encodedHash) => {
-    //     const encodedEvent = web3.utils.soliditySha3("ResourceAdded(address,string,uint256)");
-    //     let topics = [encodedEvent, encodedHash];
-    //     let logs = await web3.eth.getPastLogs({
-    //         address: contractAddress,
-    //         fromBlock: 0,
-    //         topics
-    //     });
-    //     if(logs.length > 0){
-    //         // let log = logs[0];
-    //         console.log(logs);
-    //         // web3.eth.abi.decodeLog([
-    //         //     {
-    //         //         type: 'address',
-    //         //         name: 'publisher',
-    //         //         indexed: true
-    //         //     },
-    //         //     {
-    //         //         type: 'string',
-    //         //         name: 'filehash',
-    //         //         indexed: true
-    //         //     },
-    //         //     {
-    //         //         type: 'uint256',
-    //         //         name: 'timestamp',
-    //         //         indexed: false
-    //         //     }
-    //         // ], log.data, topics);
-    //         // setLogs([log, ...logs]);
-    //     }
-    // }
+   
 
     const getVersionHistoryLogs = async (encodedHash) => {
-        const encodedEvent = web3.utils.soliditySha3("ResourceAdapted(string,address,string,string,uint256)");
+        const encodedEvent = web3.utils.soliditySha3("ResourceAdapted(string,address,string,string,uint8,uint256)");
         let topics = [encodedEvent, encodedHash];
         let tempLogs = await web3.eth.getPastLogs({
             address: contractAddress,
@@ -71,15 +42,19 @@ export const VersionHistory = ({ web3, filehash, contractAddress }) => {
                 },
                 {
                     type: 'address',
-                    name: 'user',
+                    name: 'consumer',
                 },
                 {
                     type: 'string',
-                    name: 'remix'
+                    name: 'adaptedResource'
                 },
                 {
                     type: 'string',
                     name: 'comment'
+                },
+                {
+                    type: 'uint8',
+                    name: 'adaptation'
                 },
                 {
                     type: 'uint256',
