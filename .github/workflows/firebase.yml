@@ -34,8 +34,8 @@ jobs:
     - name: Archive Build
       uses: actions/upload-artifact@v2
       with:
-        name: client/build/
-        path: client/build/
+        name: build
+        path: client/build
   deploy:
     name: Deploy
     needs: build
@@ -45,8 +45,8 @@ jobs:
       - name: Download Build
         uses: actions/download-artifact@v2
         with:
-          name: client/build/
-          path: client/build/
+          name: build
+          path: build
       - name: Deploy to Firebase
         uses: w9jds/firebase-action@master
         with:
