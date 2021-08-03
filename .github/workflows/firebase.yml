@@ -35,7 +35,7 @@ jobs:
       uses: actions/upload-artifact@v2
       with:
         name: build
-        path: client/build 
+        path: build 
   deploy:
     name: Deploy
     needs: build
@@ -44,6 +44,9 @@ jobs:
       - uses: actions/checkout@v2
       - name: Download Build
         uses: actions/download-artifact@v2
+        with:
+          name: build
+          path: build
       - name: Deploy to Firebase
         uses: w9jds/firebase-action@master
         with:
