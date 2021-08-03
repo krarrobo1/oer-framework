@@ -32,19 +32,19 @@ jobs:
       run: | 
         npm install --prefix ./client
         npm run build --prefix ./client
-      working-directory: ${{env.working_directory}}
+      working-directory: ${{env.working-directory}}
       
     - name: print directory
       run: |
         ls -R
-      working-directory: ${{env.working_directory}}
+      working-directory: ${{env.working-directory}}
         
     - name: Archive Build
       uses: actions/upload-artifact@v2
       with:
         name: build
         path: build
-      working-directory: ${{env.working_directory}}
+      working-directory: ${{env.working-directory}}
   deploy:
     name: Deploy
     needs: build
