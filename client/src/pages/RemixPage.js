@@ -1,9 +1,8 @@
 import React from 'react'
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
-import Swal from 'sweetalert2';
 
-import { RemixForm } from '../components/resource/RemixForm';
+import { RemixForm } from 'src/components/resource/RemixForm';
 
 export const RemixScreen = (props) => {
     const{originalResource} = props.location;

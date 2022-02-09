@@ -2,9 +2,9 @@ import React, { useState } from 'react';
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import Swal from 'sweetalert2';
-import { useForm } from '../../../hooks/useForm';
-import { IPFSURL } from '../../../types/constants';
-import { UsageForm } from '../UsageForm';
+import { useForm } from 'src/hooks/useForm';
+import { IPFSURL } from 'src/types/constants';
+import { UsageForm } from 'src/components/resource/UsageForm';
 
 
 

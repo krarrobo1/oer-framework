@@ -1,7 +1,7 @@
-import React, { useContext } from 'react'
-import BlockchainContext from '../BlockchainContext';
-import { RegisterForm } from '../components/user/RegisterForm';
-import { Welcome } from '../components/user/Welcome';
+import React, { useContext } from 'react';
+import BlockchainContext from 'src/BlockchainContext';
+import { RegisterForm } from 'src/components/user/RegisterForm';
+import { Welcome } from 'src/components/user/Welcome';
 
 export const Home = () => {
     const { user } = useContext(BlockchainContext);

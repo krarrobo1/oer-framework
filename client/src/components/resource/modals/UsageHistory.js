@@ -3,7 +3,7 @@ import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
 import Alert from 'react-bootstrap/Alert';
 import { AiOutlineHistory } from 'react-icons/ai';
-import { UsageItem } from '../items/UsageItem';
+import { UsageItem } from 'src/components/resource/items/UsageItem';
 
 export const UsageHistory = ({ web3, filehash, resourceListContract }) => {
     const [show, setShow] = useState(false);
@@ -45,7 +45,7 @@ export const UsageHistory = ({ web3, filehash, resourceListContract }) => {
         .on('error', console.error)
     }
 
-    const getUsageLogs = async () => {
+    async function getUsageLogs () {
         let encodedHash = web3.utils.soliditySha3(filehash);
         let encodedEvent = web3.utils.soliditySha3("ResourceUsed(string,address,uint8,string,uint256)");
         let topics = [encodedEvent, encodedHash];

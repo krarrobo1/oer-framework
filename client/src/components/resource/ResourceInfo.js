@@ -1,19 +1,19 @@
 import React, { useState, useEffect, useContext } from 'react'
-import { licenses, licenseMap } from '../../types/resource';
-import BlockchainContext from '../../BlockchainContext';
+import { licenses, licenseMap } from 'src/types/resource';
+import BlockchainContext from 'src/BlockchainContext';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Card from 'react-bootstrap/Card';
-import { IPFSURL } from '../../types/constants'
+import { IPFSURL } from 'src/types/constants'
 
 import { useParams } from "react-router";
-import { getRdfDescription } from '../../helpers/getRdfDescription';
+import { getRdfDescription } from 'src/helpers/getRdfDescription';
 import { Link } from 'react-router-dom';
 import { VersionHistory } from './modals/VersionHistory';
 import { UsageHistory } from './modals/UsageHistory';
-import { Spinner } from '../Spinner';
+import { Spinner } from 'src/components/Spinner';
 import { TraceabilityModal } from './modals/TraceabilityModal';
-import { timeConverter } from '../../helpers/timeConverter';
+import { timeConverter } from 'src/helpers/timeConverter';
 
 
 
@@ -38,11 +38,11 @@ export const ResourceInfo = () => {
     }, [resourceListContract])
 
 
-    const loadResource = async () => {
+    async function loadResource (){
         try {
             let resourceData = await resourceListContract.methods.resources(id).call({ from: accounts[0] });
+            console.log({resourceData})
             let desc = await getRdfDescription(resourceData.descriptionhash);
-            console.log(desc);
             setResource(resourceData);
             setDescription(desc);
             setLoading(false);

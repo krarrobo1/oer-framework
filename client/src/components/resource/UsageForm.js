@@ -1,5 +1,5 @@
 import React from 'react';
-import { usages } from '../../types/resource';
+import { usages } from 'src/types/resource';
 import Form from 'react-bootstrap/Form';
 
 export const UsageForm = ({ formState, handleInputChange }) => {

@@ -3,7 +3,7 @@ import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
 import Alert from 'react-bootstrap/Alert';
 import { AiOutlineHistory } from 'react-icons/ai';
-import { TraceItem } from '../items/TraceItem';
+import { TraceItem } from 'src/components/resource/items/TraceItem';
 
 export const VersionHistory = ({ web3, filehash, resourceListContract }) => {
     const [show, setShow] = useState(false)

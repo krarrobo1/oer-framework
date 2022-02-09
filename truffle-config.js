@@ -1,7 +1,9 @@
 const path = require("path");
+
 require("dotenv").config({
-  path: "./.env"
+  path: ".env"
 });
+
 const HDWalletProvider = require('@truffle/hdwallet-provider');
 const Mnemonic = process.env.MNEMONIC;
 const AccountIndex = 0;
@@ -17,13 +19,13 @@ module.exports = {
       network_id: "*" // Match any network id
     },
     ganache_local: {
-      provider: function(){
+      provider: function () {
         return new HDWalletProvider(Mnemonic, "http://127.0.0.1:7545", AccountIndex)
       },
       network_id: 5777
     },
-    ropsten:{
-      provider: function(){
+    ropsten: {
+      provider: function () {
         return new HDWalletProvider(Mnemonic, "https://ropsten.infura.io/v3/32999ee0439f4ff6a4c0374c3e45b214",)
       },
       network_id: 3,

@@ -1,7 +1,7 @@
 import React from 'react'
-import { timeConverter } from '../../../helpers/timeConverter';
+import { timeConverter } from 'src/helpers/timeConverter';
 import Card from 'react-bootstrap/Card';
-
+import { Link } from 'react-router-dom';
 export const TraceItem = ({ log, i }) => {
     return (
         <>
@@ -9,7 +9,9 @@ export const TraceItem = ({ log, i }) => {
                 (<Card key={i + 1}>
                     <Card.Body className="d-inline">
                         <span  className="font-weight-bold">Remix published on {timeConverter(log.timestamp)}</span> <p>by {log.consumer}</p>
-                        <a href={`http://localhost:3000/resource/${log.adaptedResource}`}>link</a>
+                        <Link to={{ pathname: `/resource/${log.adaptedResourc}` }}>
+                            Explore
+                        </Link>
                     </Card.Body>
                 </Card>)
             }

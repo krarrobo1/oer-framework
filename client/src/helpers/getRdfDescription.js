@@ -1,5 +1,5 @@
 import xml2js from 'xml2js';
-import ipfs from '../ipfs';
+import ipfs from 'src/ipfs';
 
 // gets rdf description from ipfs then parse it to js
 export const getRdfDescription = async (hash) => {

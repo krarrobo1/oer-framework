@@ -1,10 +1,10 @@
 import React from 'react';
-import { useForm } from '../../hooks/useForm';
+import { useForm } from 'src/hooks/useForm';
 import Form from 'react-bootstrap/Form';
 import { UploadForm } from './UploadForm'
 import {
     adaptations
-} from '../../types/resource';
+} from 'src/types/resource';
 
 import { useParams } from "react-router";
 

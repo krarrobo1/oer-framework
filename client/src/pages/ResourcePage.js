@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { ResourceInfo } from '../components/resource/ResourceInfo';
+import React from 'react';
+import { ResourceInfo } from 'src/components/resource/ResourceInfo';
 
 export const Resource = (props) => {
     const { resource } = props.location;

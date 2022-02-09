@@ -1,10 +1,10 @@
 import React, { useContext } from 'react';
-import BlockchainContext from '../../BlockchainContext';
-import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
+import Form from 'react-bootstrap/Form';
+import BlockchainContext from 'src/BlockchainContext';
+import { useForm } from 'src/hooks/useForm';
 import Swal from 'sweetalert2';
 
-import { useForm } from '../../hooks/useForm';
 
 export const RegisterForm = () => {
     const { web3, userListContract, accounts, setUser } = useContext(BlockchainContext);

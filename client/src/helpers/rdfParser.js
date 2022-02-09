@@ -1,6 +1,6 @@
-import { SITEURL, IPFSURL } from '../types/constants';
-import { licenses } from '../types/resource';
-import ipfs from '../ipfs';
+import { SITEURL, IPFSURL } from 'src/types/constants';
+import { licenses } from 'src/types/resource';
+import ipfs from 'src/ipfs';
 
 
 

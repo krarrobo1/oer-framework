@@ -1,8 +1,8 @@
 import React from 'react'
 import Card from 'react-bootstrap/Card';
 
-import { timeConverter } from '../../../helpers/timeConverter';
-import { usages } from '../../../types/resource';
+import { timeConverter } from 'src/helpers/timeConverter';
+import { usages } from 'src/types/resource';
 
 export const UsageItem = ({ log }) => {
     return (

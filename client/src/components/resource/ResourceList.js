@@ -2,10 +2,10 @@ import React, { useContext, useEffect, useState } from 'react';
 import Col from 'react-bootstrap/Col';
 import Table from 'react-bootstrap/Table';
 import { Link } from 'react-router-dom';
-import BlockchainContext from '../../BlockchainContext';
-import { getLicense } from '../../helpers/getLicense';
-import { timeConverter } from '../../helpers/timeConverter';
-import { Spinner } from '../Spinner';
+import BlockchainContext from 'src/BlockchainContext';
+import { getLicense } from 'src/helpers/getLicense';
+import { timeConverter } from 'src/helpers/timeConverter';
+import { Spinner } from 'src/components/Spinner';
 
 
 

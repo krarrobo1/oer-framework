@@ -1,7 +1,7 @@
-import React from 'react'
+import React from 'react';
 import Col from 'react-bootstrap/Col';
 import Row from 'react-bootstrap/Row';
-import {ResourceList} from '../components/resource/ResourceList';
+import { ResourceList } from 'src/components/resource/ResourceList';
 
 
 
@@ -12,7 +12,7 @@ export const ResourceListScreen = () => {
                 <h3>Resources</h3>
                 <hr />
             </Col>
-            <ResourceList/>
+            <ResourceList />
         </Row>
     )
 }

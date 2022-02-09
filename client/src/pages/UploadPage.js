@@ -2,7 +2,7 @@ import React from 'react'
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 
-import { UploadForm } from '../components/resource/UploadForm'
+import { UploadForm } from 'src/components/resource/UploadForm'
 
 export const UploadScreen = () => {
     return (
