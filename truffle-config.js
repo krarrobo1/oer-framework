@@ -20,13 +20,19 @@ module.exports = {
     },
     ganache_local: {
       provider: function () {
-        return new HDWalletProvider(Mnemonic, "http://127.0.0.1:7545", AccountIndex)
+        return new HDWalletProvider
+          (
+            Mnemonic,
+            "http://127.0.0.1:7545",
+            AccountIndex)
       },
       network_id: 5777
     },
     ropsten: {
       provider: function () {
-        return new HDWalletProvider(Mnemonic, "https://ropsten.infura.io/v3/32999ee0439f4ff6a4c0374c3e45b214",)
+        return new HDWalletProvider(
+          Mnemonic,
+          "https://ropsten.infura.io/v3/32999ee0439f4ff6a4c0374c3e45b214")
       },
       network_id: 3,
       gas: 4500000

@@ -17,22 +17,21 @@ export const Welcome = (props) => {
             <Col>
                 <Card.Img variant="top" src="./openlesson.png"/>
                 <Card.Body>
-                    <Card.Title>Share OER</Card.Title>
+                    <Card.Title>Share a Resource</Card.Title>
                     <Card.Text>
                         Submit OER from the web or upload a standalone learning module, lesson, assignment, assessment or activity.
                     </Card.Text>
-                    <Button as={Link} to="/upload" variant="primary">Add OER</Button>
+                    <Button as={Link} to="/upload" variant="primary">Register</Button>
                 </Card.Body>
             </Col>
             <Col>
                 <Card.Img variant="top" src="./traceability.png" />
                 <Card.Body>
-                    <Card.Title>Explore OERS</Card.Title>
+                    <Card.Title>Find OERS</Card.Title>
                     <Card.Text>
-                        Some quick example text to build on the card title and make up the bulk of
-                        the card's content.
+                        Explore the stored OERs and it's traceability
                     </Card.Text>
-                    <Button as={Link} to="/explore" variant="primary">Find OERS</Button>
+                    <Button as={Link} to="/explore" variant="primary">Go to explorer</Button>
                 </Card.Body>
             </Col>
 

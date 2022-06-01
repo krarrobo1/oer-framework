@@ -4,7 +4,7 @@ import Card from 'react-bootstrap/Card';
 import { timeConverter } from 'src/helpers/timeConverter';
 import { usages } from 'src/types/resource';
 
-export const UsageItem = ({ log }) => {
+export const UsageItem = ({ log}) => {
     return (
         <>
             { !!log &&

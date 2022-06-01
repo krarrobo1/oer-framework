@@ -1,255 +1,243 @@
-import React, { useContext, useState, useEffect, useMemo } from 'react';
-import Button from 'react-bootstrap/Button';
-import Col from 'react-bootstrap/Col';
-import Form from 'react-bootstrap/Form';
-import Row from 'react-bootstrap/Row';
-import Swal from 'sweetalert2';
-import validator from 'validator';
-import BlockchainContext from '../../BlockchainContext';
-import { useForm } from '../../hooks/useForm';
+import React, { useContext, useEffect, useState } from 'react';
 import {
-    educationLevels, languages, licenses,
-    materialTypes,
-    subjectAreas,
-    licenseMap
-} from '../../types/resource';
-import { Keywords } from './form/Keywords';
+    Button,
+    Col,
+    Form,
+    Row
+} from 'react-bootstrap';
+import { useForm } from "react-hook-form";
 import { Link } from 'react-router-dom';
-import { Upload } from './form/Upload';
-import { getRdfDescription } from '../../helpers/rdfParser';
+import BlockchainContext from 'src/BlockchainContext';
+import { uploadResourceDescription, uploadResourceFile, uploadResourcefromUrl } from 'src/helpers/ipfsUpload';
+import { encodeResourceData, encodeAdaptationData } from 'src/helpers/encoder';
+import {
+    ccLicenses,
+    educationLevels,
+    languages,
+    resourceTypes,
+    subjectAreas,
+    urlRegex,
+} from 'src/types/resource';
+import { Feedback } from './form/Feedback';
+import { Keywords } from './form/Keywords';
+import { SelectInput } from './form/SelectInput';
+import Swal from 'sweetalert2';
+import { RemixForm } from './RemixForm';
 
-// TODO: Pensar como gestionar las adaptaciones, pasar params y hacer el call en los SC.
-export const UploadForm = ({ originalResource, adaptation, originalhash }) => {
-    const { web3, ipfs, accounts, resourceListContract, user } = useContext(BlockchainContext);
-    const [licenseId, changeLicenseId] = useState(0)
+export const UploadForm = ({
+    resourceData,
+    setError
+}) => {
 
-    useEffect(() => {
-        if (!!originalResource) {
-            changeLicenseId(licenseMap.get(originalResource.licenseAbbr).id);
+    const {
+        accounts,
+        resourceListContract
+    } = useContext(BlockchainContext)
+
+    const {
+        register,
+        watch,
+        handleSubmit,
+        control,
+        formState: { errors },
+        reset
+    } = useForm({
+        defaultValues: {
+            ...resourceData
         }
-    }, [])
-    const [formState, handleInputChange, reset, setManual] = useForm({
-        title: !!originalResource ? originalResource.title : "",
-        author: !!originalResource ? originalResource.author : "",
-        subject: !!originalResource ? originalResource.subject : "",
-        educationLevel: !!originalResource ? originalResource.educationLevel : "",
-        materialType: !!originalResource ? originalResource.materialtype : "",
-        language: !!originalResource ? originalResource.language : "",
-        license: !!originalResource ? licenseId : "",
-        file: '',
-        keywords: !!originalResource ? originalResource.keywords.split(',') : [],
-        remixOf: !!originalResource ? originalResource.filehash : "",
-        publisher: user,
-        remixComment: ''
     });
 
-    const { title, author, subject, educationLevel, materialType, language, license, keywords, file, remixOf, remixComment } = formState;
+    const [resource, setResource] = useState("file");
+    const [url, file] = watch(['url', 'file']);
 
-    const [canSubmit, setCanSubmit] = useState(false);
+  
+    useEffect(() => {
+      if(file && file.length > 0){
+        setResource("file");
+      }else if(url && url !== ""){
+        setResource("url");
+      }
+    }, [url, file])
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        if (isFormValid()) {
-            const ipfsTitle = web3.utils.utf8ToHex(title);
-            const ipfsAuthor = web3.utils.utf8ToHex(author);
-            try {
 
-                await ipfs.add(file, async (err, data) => {
-
-                    console.log(`ERROR => ${err}`);
-                    const { hash } = data[0];
-                    const ipfsHash = hash;
-                   
-                    const ipfsDescription = await getRdfDescription({ ...formState, filehash: hash });
-
-                    try {
-                        if(!adaptation){
-                            await resourceListContract.methods.addResource(
-                                ipfsTitle,
-                                ipfsAuthor,
-                                ipfsHash,
-                                ipfsDescription,
-                                license,
-                            ).send({
-                                from: accounts[0]
-                            })
-                        }else{
-                            await resourceListContract.methods.addAdaptation(
-                                ipfsTitle,
-                                ipfsAuthor,
-                                ipfsHash,
-                                ipfsDescription,
-                                license,
-                                adaptation.adaptation,
-                                originalhash,
-                                adaptation.comment
-                            ).send({
-                                from: accounts[0]
-                            })
-                        }
-                        Swal.fire("Resource Added", "You've uploaded a new resource", "success")
-                    } catch (error) {
-                        console.log(error);
-                    }
-
-                });
-                reset();
-            } catch (error) {
-                console.log('Upload Err', { error });
-            }
+    async function addResource (data){
+        if(resource === "file"){
+            return await uploadResourceFile(data.file[0]);
+        }else{
+           return  await uploadResourcefromUrl(data.url);
         }
     }
+    
+    const onSubmit = async (data) => {
+        try {
+            const uploadedResource = await addResource(data);
+            const descriptionUpload = await uploadResourceDescription({
+                ...data,
+                fileHash: uploadedResource.path
+            });
+            if(!resourceData){
+                const encodedData = encodeResourceData({
+                    title: data.title,
+                    author: data.author,
+                    fileHash: uploadedResource.path,
+                    descriptionHash: descriptionUpload.path,
+                    license: data.license
+                });
+                resourceListContract.methods.addResource(...encodedData).send({
+                    from: accounts[0]
+                })
+                .once('transactionHash', function (hash) {
+                    Swal.fire("Resource Added", "You've uploaded a new resource please wait for transaction confirmation...", "info")
+                })
+                .then(function (receipt) {
+                    Swal.fire("Transaction Confirmed", `GAS USED: ${receipt.gasUsed}`, "success")
+                })
+                .catch(function (error) {
+                    const { code, message } = error
+                    Swal.fire("Transaction Rejected", `${code}: ${message}`, "error")
+                })
+                .finally(() =>{
+                    reset();
+                });
+            }else{
+                const encodedData = encodeAdaptationData({
+                    title: data.title,
+                    author: data.author,
+                    fileHash: uploadedResource.path,
+                    descriptionHash: descriptionUpload.path,
+                    license: data.license,
+                    adaptation: data.adaptation,
+                    remixOf: resourceData.fileHash,
+                    comment: data.improvementComment
+                });
 
-
-    const isFormValid = () => {
-        if (validator.isEmpty(title)) {
-            return false;
+                resourceListContract.methods.addAdaptation(...encodedData).send({
+                    from: accounts[0]
+                })
+                .once('transactionHash', function (hash) {
+                    Swal.fire("Resource Added", "You've uploaded a new resource please wait for transaction confirmation...", "info")
+                })
+                .then(function (receipt) {
+                    Swal.fire("Transaction Confirmed", `GAS USED: ${receipt.gasUsed}`, "success")
+                })
+                .catch(function (error) {
+                    const { code, message } = error
+                    Swal.fire("Transaction Rejected", `${code}: ${message}`, "error")
+                })
+                .finally(() =>{
+                    reset();
+                });
+            }
+        } catch (error) {
+            console.log(error);
+            setError("Couldn't register REA... ");
         }
-        else if (validator.isEmpty(author)) {
-            return false;
-        }
-        else if (subject === "") {
-            return false;
-        }
-        else if (materialType === "") {
-            return false;
-        }
-        else if (educationLevel === "") {
-            return false;
-        }
-        else if (license === "") {
-            return false;
-        }
-        else if (language === "") {
-            return false;
-        }
-        else if (keywords.length === 0) {
-            return false;
-        }
-        return true;
     }
 
     return (
-        <Form onSubmit={handleSubmit}>
+        <Form onSubmit={handleSubmit(onSubmit)}>
+            {
+                resourceData &&
+                <RemixForm register={register} errors={errors} />
+            }
             <Row>
                 <Col>
-                    <Form.Group >
-                        <Form.Label>Title</Form.Label>
-                        <Form.Control
-                            type="text"
-                            value={title}
-                            name="title"
-                            maxLength="32"
-                            placeholder="Enter the resource title"
-                            onChange={handleInputChange}
-                        />
-                    </Form.Group>
+                    <Form.Label>Title</Form.Label>
+                    <Form.Control
+                        placeholder="Enter the resource title"
+                        {...register("title", { required: true })}
+                    />
+                    <Feedback show={errors["title"]} />
                 </Col>
                 <Col>
-                    <Form.Group >
-                        <Form.Label>Author</Form.Label>
-                        <Form.Control
-                            type="text"
-                            name="author"
-                            maxLength="32"
-                            value={author}
-                            placeholder="Enter the author name"
-                            onChange={handleInputChange}
-                        />
-                    </Form.Group>
+                    <Form.Label>Author</Form.Label>
+                    <Form.Control
+                        type="text"
+                        maxLength="32"
+                        placeholder="Enter the author name"
+                        {...register("author", { required: true })}
+                    />
+                    <Feedback show={errors["author"]} />
                 </Col>
             </Row>
             <Row>
                 <Col>
-                    <Form.Group>
-                        <Form.Label>Subject Area</Form.Label>
-                        <Form.Control
-                            as="select"
-                            name="subject"
-                            onChange={handleInputChange}
-                            value={subject}
-
-                        >
-                            <option>Choose one...</option>
-                            {subjectAreas.map((area) => (<option
-                                key={area}
-                                value={area}
-                            >
-                                {area}
-                            </option>))}
-                        </Form.Control>
-                    </Form.Group>
+                    <SelectInput
+                        register={
+                            register("subject", { validate: val => val !== "Choose one..." })
+                        }
+                        options={subjectAreas.map((item, idx) => ({ id: idx, title: item}) )}
+                        label={"Subject Area"}
+                    />
+                    <Feedback show={errors["subject"]} />
                 </Col>
                 <Col>
-                    <Form.Group>
-                        <Form.Label>Education Level</Form.Label>
-                        <Form.Control
-                            as="select"
-                            name="educationLevel"
-                            onChange={handleInputChange}
-                            value={educationLevel}
-
-                        >
-                            <option>Choose one...</option>
-                            {educationLevels.map((el) => (
-                                <option
-                                    key={el}
-                                    value={el}>
-                                    {el}
-                                </option>))}
-                        </Form.Control>
-                    </Form.Group>
+                    <SelectInput
+                        register={
+                            register("educationLevel", { validate: val => val !== "Choose one..." })}
+                        options={educationLevels.map((item, idx) => ({ id: idx, title: item}) )}
+                        label={"Education Level"}
+                    />
+                    <Feedback show={errors["educationLevel"]} />
                 </Col>
                 <Col>
-                    <Form.Group>
-                        <Form.Label>Material Type</Form.Label>
-                        <Form.Control
-                            as="select"
-                            name="materialType"
-                            value={materialType}
-                            onChange={handleInputChange}
-                        >
-                            <option>Choose one...</option>
-                            {materialTypes.map((mt) => (<option key={mt}>{mt}</option>))}
-                        </Form.Control>
-                    </Form.Group>
+                    <SelectInput
+                        register={
+                            register("resourceType", { validate: val => val !== "Choose one..." })}
+                        options={resourceTypes.map((item, idx) => ({ id: idx, title: item}) )}
+                        label={"Resource Type"}
+                    />
+                    <Feedback show={errors["resourceType"]} />
                 </Col>
             </Row>
-            <Form.Group>
-                <Form.Label>Language</Form.Label>
-                <Form.Control
-                    as="select"
-                    name="language"
-                    value={language}
-                    onChange={handleInputChange}
-                >
-                    <option>Choose one...</option>
-                    {languages.map((lan) => (<option key={lan}>{lan}</option>))}
-                </Form.Control>
-            </Form.Group>
-
-            <Form.Group>
-                <Form.Label>License</Form.Label>
-                <Form.Control
-                    as="select"
-                    name="license"
-                    value={license}
-                    onChange={handleInputChange}
-                >
-                    <option>Choose one...</option>
-                    {licenses.map((lic) => (<option key={lic.id} value={lic.id}>{lic.title}</option>))}
-                </Form.Control>
-            </Form.Group>
-            <Keywords keywords={keywords} setManual={setManual} />
-
-            <Upload file={file} setManual={setManual} setCanSubmit={setCanSubmit} />
-
-
-
-            <Button as={Link} to="/" className="m-2" variant="outline-primary">Cancel</Button>
-
-            <Button className="m-2" type="submit" disabled={!canSubmit}>Submit</Button>
-
+            <Row>
+                <Col>
+                    <SelectInput
+                        register={
+                            register("language", { validate: val => val !== "Choose one..." })}
+                        options={languages.map((item, idx) => ({ id: idx, title: item}) )}
+                        label={"Language"}
+                    />
+                    <Feedback show={errors["language"]} />
+                </Col>
+                <Col>
+                    <SelectInput
+                        register={
+                            register("license", { validate: val => val !== "Choose one..." })}
+                        options={ccLicenses.map((item, idx) => ({ id: idx, title: item}) )}
+                        label={"Licenses"}
+                    />
+                    <Feedback show={errors["license"]} />
+                </Col>
+            </Row>
+            <Row>
+                <Col xs={12}>
+                    <Keywords control={control} />
+                    <Feedback show={errors["keywords"]} />
+                </Col>
+                <Col xs={12}>
+                    <Form.Label>Resource Url</Form.Label>
+                    <Form.Control
+                        placeholder="Enter the resource url"
+                        {...register("url", { required: resource === "url", pattern: urlRegex })}
+                        disabled={file && file.length > 0}
+                    />
+                    <Feedback show={errors["url"]} />
+                </Col>
+                <Col>
+                    <Form.Label>Upload a file</Form.Label>
+                    <Form.Control
+                        type="file"
+                        {...register("file", { required: resource === "file" })}
+                        disabled={url && url !== ""}
+                    />
+                    <Feedback show={errors["file"]} />
+                </Col>
+                <Col xs={12}>
+                    <Button as={Link} to="/" className="m-2" variant="outline-primary">Cancel</Button>
+                    <Button className="m-2" type="submit">Submit</Button>
+                </Col>
+            </Row>
         </Form>
     )
 };

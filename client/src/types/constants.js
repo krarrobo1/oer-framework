@@ -1,4 +1,4 @@
-const ENV = process.env.NODE_ENV;
+const env = process.env.NODE_ENV;
 
 const NETWORKS = {
     '1': {
@@ -19,7 +19,19 @@ const NETWORKS = {
     }
 }
 
+const urls = {
+  production:{
+    siteUrl: "https://oerworld.web.app/",
+    ipfsUrl: "https://gateway.ipfs.io/ipfs/"
+  },
+  development:{
+    siteUrl: "http://localhost:3000",
+    ipfsUrl: "http://localhost:8080/ipfs/"
+  }
+}
 
-const IPFSURL = ENV === 'development' ? 'http://localhost:8080/ipfs/':'https://gateway.ipfs.io/ipfs/'
-const SITEURL = ENV === 'development' ?  'http://localhost:3000/' : 'https://oerworld.web.app/' 
+
+const IPFSURL = urls[env].ipfsUrl;
+const SITEURL = urls[env].siteUrl;
+
 export { NETWORKS, IPFSURL, SITEURL };

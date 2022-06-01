@@ -1,30 +1,29 @@
 import React, { useState } from 'react'
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
-import Form from 'react-bootstrap/Form';
-import Badge from 'react-bootstrap/Badge';
-import { ImCross } from 'react-icons/im';
+import Form from 'react-bootstrap/Form'
+import Badge from 'react-bootstrap/Badge'
+import { Controller } from 'react-hook-form'
 
 
 export const Keywords = ({
-    register
+    control,
+    defaultKeywords = []
 }) => {
 
     const [keyword, setKeyword] = useState("")
-    const [keywords, setKeywords] = useState([])
+    const [keywords, setKeywords] = useState(defaultKeywords)
 
     const removeKeyword = (idx) => {
         setKeywords(keywords.filter((_, id) => id !== idx));
     }
 
-    const changeKeyword = ({ target }) => {
-        setKeyword(target.value);
-    }
-
-    const handleAddKeyword = (e) => {
+    const handleAddKeyword = (e, onChange) => {
         if (e.charCode === 13) { // On key enter
+            e.preventDefault();
             setKeywords([...keywords, keyword]);
-            setKeyword("");
+            onChange([...keywords, keyword])
+            setKeyword("")
         }
     }
 
@@ -34,15 +33,24 @@ export const Keywords = ({
                 <Form.Label>Keywords</Form.Label>
             </Col>
             <Col sm={8}>
-                <Form.Control
-                    type="text"
+                <Controller
+                    control={control}
                     name="keyword"
-                    maxLength="32"
-                    placeholder="Insert a keyword"
-                    onChange={changeKeyword}
-                    value={keyword}
-                    onKeyPress={handleAddKeyword}
+                    render={({ field: { onChange, ref } }) => (
+                    <Form.Control
+                        type="text"
+                        name="keywords"
+                        maxLength="12"
+                        placeholder="Insert a keyword"
+                        onChange={(e) => {
+                            setKeyword(e.target.value);
+                        }}
+                        ref={ref}
+                        value={keyword}
+                        onKeyPress={(e) => {handleAddKeyword(e, onChange)}}
+                    />)}
                 />
+                
             </Col>
             <Col sm={12} className='p-2'>
                 {

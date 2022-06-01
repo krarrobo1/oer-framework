@@ -1,8 +1,24 @@
 import Web3 from "web3";
 
-function onSubmitResource(data){
-    return {
-        ipfsTitle : Web3.utils.utf8ToHex(title),
-        ipfsAuthor : Web3.utils.utf8ToHex(author)
-    }
+export function encodeResourceData(data){
+    return [
+        Web3.utils.utf8ToHex(data.title),
+        Web3.utils.utf8ToHex(data.author),
+        data.fileHash,
+        data.descriptionHash,
+        parseInt(data.license)
+    ]
+}
+
+export function encodeAdaptationData(data){
+    return [
+        Web3.utils.utf8ToHex(data.title),
+        Web3.utils.utf8ToHex(data.author),
+        data.fileHash,
+        data.descriptionHash,
+        parseInt(data.license),
+        parseInt(data.adaptation),
+        data.remixOf,
+        data.comment
+    ]
 }

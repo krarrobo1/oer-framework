@@ -9,7 +9,7 @@ export const TraceItem = ({ log, i }) => {
                 (<Card key={i + 1}>
                     <Card.Body className="d-inline">
                         <span  className="font-weight-bold">Remix published on {timeConverter(log.timestamp)}</span> <p>by {log.consumer}</p>
-                        <Link to={{ pathname: `/resource/${log.adaptedResourc}` }}>
+                        <Link to={{ pathname: `/resource/${log.adaptedResource}` }}>
                             Explore
                         </Link>
                     </Card.Body>

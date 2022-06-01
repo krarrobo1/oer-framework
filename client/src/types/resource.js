@@ -85,37 +85,27 @@ export const licenses = [
 
 ];
 
+
+
 export const adaptations = [
-    {
-        id: 0,
-        title: 'Remix',
-    },
-    {
-        id: 1,
-        title: 'Correction'
-    },
-    {
-        id: 2,
-        title: 'Derived Copy'
-    },
-    {
-        id: 3,
-        title: 'Translation'
-    }
+    'Remix',
+    'Correction',
+    'Derived Copy',
+    'Translation',
 ]
 
 export let licenseMap = new Map();
 
-licenseMap.set('by', { id: 0, url: 'https://creativecommons.org/licenses/by/3.0/es'});
-licenseMap.set('by-nd', { id: 1, url: 'https://creativecommons.org/licenses/by-nd/3.0/es', abbr: 'by-nd'});
-licenseMap.set('by-sa', { id: 2, url: 'https://creativecommons.org/licenses/by-sa/3.0/es', abbr: 'by-sa'});
-licenseMap.set('by-nc', { id: 3, url: 'https://creativecommons.org/licenses/by-nc/3.0/es', abbr: 'by-nc'});
-licenseMap.set('by-nc-sa', { id: 4, url: 'https://creativecommons.org/licenses/by-nc-sa/3.0/es', abbr: 'by-nc-sa'});
-licenseMap.set('by-nc-nd', { id: 5, url: 'https://creativecommons.org/licenses/by-nc-nd/3.0/es', abbr: 'by-nc-nd'});
-licenseMap.set('publicdomain', { id: 6, url: 'https://creativecommons.org/publicdomain/zero/1.0/deed.es_ES'});
+licenseMap.set('by', { id: 0, url: 'https://creativecommons.org/licenses/by/3.0/es' });
+licenseMap.set('by-nd', { id: 1, url: 'https://creativecommons.org/licenses/by-nd/3.0/es', abbr: 'by-nd' });
+licenseMap.set('by-sa', { id: 2, url: 'https://creativecommons.org/licenses/by-sa/3.0/es', abbr: 'by-sa' });
+licenseMap.set('by-nc', { id: 3, url: 'https://creativecommons.org/licenses/by-nc/3.0/es', abbr: 'by-nc' });
+licenseMap.set('by-nc-sa', { id: 4, url: 'https://creativecommons.org/licenses/by-nc-sa/3.0/es', abbr: 'by-nc-sa' });
+licenseMap.set('by-nc-nd', { id: 5, url: 'https://creativecommons.org/licenses/by-nc-nd/3.0/es', abbr: 'by-nc-nd' });
+licenseMap.set('publicdomain', { id: 6, url: 'https://creativecommons.org/publicdomain/zero/1.0/deed.es_ES' });
 
 
-export const materialTypes = [
+export const resourceTypes = [
     "Activity/Lab",
     "Assessment",
     "Case Study",
@@ -169,6 +159,16 @@ export const educationLevels = [
     "Adult Education"
 ]
 
+export const ccLicenses = [
+    'Attribution',
+    'Attribution No Derivative Works',
+    'Attribution Share Alike',
+    'Attribution Non-Commercial',
+    'Attribution Non-Commercial Share Alike',
+    'Attribution Non-Commercial No Derivatives',
+    'Public Domain',
+]
+
 export const usages = [
     {
         id: 0,
@@ -189,5 +189,33 @@ export const usages = [
     {
         id: 4,
         title: 'Lecture Class'
+    }
+]
+
+export const urlRegex = /(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/g;
+
+export const emptyHexStr = "0x0000000000000000000000000000000000000000000000000000000000000000";
+
+export const usageLogSignature = [
+    {
+        type: 'string',
+        name: 'resource',
+        indexed: true
+    },
+    {
+        type: 'address',
+        name: 'user'
+    },
+    {
+        type: 'uint8',
+        name: 'usage'
+    },
+    {
+        type: 'string',
+        name: 'comment'
+    },
+    {
+        type: 'uint256',
+        name: 'timestamp'
     }
 ]

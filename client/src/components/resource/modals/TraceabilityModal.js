@@ -1,94 +1,63 @@
 import React, { useState } from 'react';
-import Button from 'react-bootstrap/Button';
-import Modal from 'react-bootstrap/Modal';
-import Swal from 'sweetalert2';
-import { useForm } from 'src/hooks/useForm';
+import { Button, Modal } from 'react-bootstrap';
+
 import { IPFSURL } from 'src/types/constants';
 import { UsageForm } from 'src/components/resource/UsageForm';
 
 
 
-export const TraceabilityModal = ({ show, setShow, filehash, from, contract }) => {
+export const TraceabilityModal = ({
+    show,
+    setShow,
+    from,
+    resourceListContract,
+    description
+}) => {
 
-    const [trace, setTrace] = useState(false);
-
-    const [formState, handleInputChange] = useForm({
-        comment: '',
-        usage: ''
-    });
-
-    const { comment, usage } = formState;
-
-    const handleSubmit = async (e) => {
-        if (checkForm()) {
-            e.preventDefault();
-            let result = await contract.methods.registerUsage(filehash, usage, comment).send({ from });
-            if (result) {
-                Swal.fire("Log Added", "Thanks for your colaboration", "success");
-                setShow(false);
-                setTrace(false);
-            }
-        }
-    }
+    const [confirmation, setConfirmation] = useState(false);
 
 
-    const handleClose = () => {
-        setShow(false);
-        setTrace(false);
-    };
-
-    const handleTrace = () => {
-        setTrace(true);
-    }
-
-    const checkForm = () => {
-        if (comment.length < 2) {
-            return false;
-        } else if (usage === "") {
-            return false;
-        }
-        return true;
-    }
 
     return (
-        <Modal show={show} onHide={handleClose}>
-            <Modal.Header closeButton>
-                <Modal.Title>Traceability</Modal.Title>
+        <Modal show={show} onHide={() => setShow(false)}>
+            <Modal.Header closeButton onHide={() => setShow(false)}>
+                <Modal.Title>Usage Traceability</Modal.Title>
             </Modal.Header>
-            {!trace ?
+            {!confirmation ?
                 <Modal.Body>
-                    <span>Would you like to contribute to traceability of this resource?</span>
+                    <span>Would you like to contribute to usage traceability of this resource?</span>
                 </Modal.Body>
                 :
                 <Modal.Body>
-                    <UsageForm formState={formState} handleInputChange={handleInputChange} />
+                    <UsageForm resourceListContract={resourceListContract} from={from} fileHash={description.fileHash} />
                 </Modal.Body>
             }
 
             <Modal.Footer>
-                {!trace ?
+                {!confirmation ?
                     <>
                         <a
                             className="btn btn-secondary"
-                            onClick={handleClose}
-                            href={`${IPFSURL}${filehash}`}
+                            onClick={() => { setShow(false) }}
+                            href={IPFSURL + description.fileHash}
                         >
                             Download
                         </a>
+                       
                         <Button
                             variant="primary"
-                            onClick={handleTrace}>
+                            onClick={() => { setConfirmation(true) }}>
                             Sure
                         </Button>
                     </> :
                     <>
-                        <Button variant="secondary" onClick={handleClose}>
+                        <Button variant="secondary" onClick={() => { setShow(false) }}>
                             Cancel
                         </Button>
                         <Button
                             type="submit"
+                            form="usage-form"
                             variant="primary"
-                            onClick={handleSubmit}
                         >
                             Submit and Download
                         </Button>

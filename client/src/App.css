@@ -1,6 +1,4 @@
-.App {
-  /* text-align: center; */
-}
+
 
 .App-logo {
   height: 40vmin;
@@ -27,4 +25,11 @@
 
 .cursor-pointer{
   cursor: pointer;
+}
+
+.center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 600px;
 }

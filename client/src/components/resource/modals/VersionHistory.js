@@ -25,7 +25,7 @@ export const VersionHistory = ({ web3, filehash, resourceListContract }) => {
     }
    
 
-    const getVersionHistoryLogs = async (encodedHash) => {
+    async function getVersionHistoryLogs(encodedHash) {
         const encodedEvent = web3.utils.soliditySha3("ResourceAdapted(string,address,string,string,uint8,uint256)");
         let topics = [encodedEvent, encodedHash];
         let tempLogs = await web3.eth.getPastLogs({

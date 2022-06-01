@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useContext } from 'react'
-import { licenses, licenseMap } from 'src/types/resource';
 import BlockchainContext from 'src/BlockchainContext';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
@@ -7,13 +6,13 @@ import Card from 'react-bootstrap/Card';
 import { IPFSURL } from 'src/types/constants'
 
 import { useParams } from "react-router";
-import { getRdfDescription } from 'src/helpers/getRdfDescription';
 import { Link } from 'react-router-dom';
 import { VersionHistory } from './modals/VersionHistory';
 import { UsageHistory } from './modals/UsageHistory';
-import { Spinner } from 'src/components/Spinner';
+import { Spinner } from 'src/components/misc/Spinner';
 import { TraceabilityModal } from './modals/TraceabilityModal';
 import { timeConverter } from 'src/helpers/timeConverter';
+import { getResourceDescription } from 'src/helpers/ipfsFetch';
 
 
 
@@ -34,22 +33,26 @@ export const ResourceInfo = () => {
     };
 
     useEffect(() => {
-        loadResource();
+        try{
+            if(resourceListContract){
+               loadResource();
+            }
+        }catch(error){
+            console.log("Error loading resource", error);
+        }
     }, [resourceListContract])
 
 
-    async function loadResource (){
-        try {
-            let resourceData = await resourceListContract.methods.resources(id).call({ from: accounts[0] });
-            console.log({resourceData})
-            let desc = await getRdfDescription(resourceData.descriptionhash);
-            setResource(resourceData);
-            setDescription(desc);
-            setLoading(false);
-        } catch (err) {
-            console.log("Error loading resource", err);
-        }
+    async function loadResource() {
+        let resourceData = await resourceListContract.methods.resources(id).call({ from: accounts[0] });
+        setResource(resourceData);
+        let desc = await getResourceDescription(resourceData.descriptionhash);
+        setDescription(desc);
+        console.log({ desc });
+        setLoading(false);
     }
+
+  
 
     return (
         <Row className="mt-5">
@@ -63,7 +66,7 @@ export const ResourceInfo = () => {
                             </Card.Title>
                             <Row>
                                 <Col xs={12}>
-                                    <a className="m-2 btn btn-outline-success" href={IPFSURL + description.filehash} target="_blank">View Resource</a>
+                                    <a className="m-2 btn btn-outline-success" href={IPFSURL + description.fileHash} target="_blank">View Resource</a>
                                     <a className="m-2 btn btn-success" onClick={handleShow}>Download</a>
                                 </Col>
                                 <Col xs={12}>
@@ -71,15 +74,15 @@ export const ResourceInfo = () => {
                                         <Col>
                                             <VersionHistory
                                                 web3={web3}
-                                                filehash={description.filehash}
+                                                filehash={description.fileHash}
                                                 resourceListContract={resourceListContract} />
                                             <UsageHistory
                                                 web3={web3}
-                                                filehash={description.filehash}
+                                                fileHash={description.fileHash}
                                                 resourceListContract={resourceListContract} />
                                         </Col>
                                         <Col>
-                                            <Link to={{ pathname: `/remix/${description.filehash}`, originalResource: description }}>
+                                            <Link to={{ pathname: `/remix/${resource.descriptionhash}`, resourceData: description }}>
                                                 Remix
                                             </Link>
                                         </Col>
@@ -89,9 +92,10 @@ export const ResourceInfo = () => {
                             <TraceabilityModal
                                 show={show}
                                 setShow={setShow}
-                                filehash={description.filehash}
                                 from={accounts[0]}
-                                contract={resourceListContract} />
+                                resourceListContract={resourceListContract} 
+                                description={description}
+                                />
                         </Card.Body>
                     </Card>
                 </Col>
@@ -100,30 +104,29 @@ export const ResourceInfo = () => {
                         <Card.Body>
                             <Card.Title>Description</Card.Title>
                             <hr />
-                                <Row>
-                                    <Col xs={12}>
-                                        <span className="font-weight-bold">Subject: </span> {description.subject}
-                                    </Col>
-                                    <Col xs={12}>
-                                        <span className="font-weight-bold">Level: </span> {description.educationLevel}
-                                    </Col>
-                                    <Col xs={12}>
-                                        <span className="font-weight-bold">Material Type: </span> {description.materialtype}
-                                    </Col>
-                                    <Col xs={12}>
-                                        <span className="font-weight-bold">Author: </span> {description.author}
-                                    </Col>
-                                    <Col xs={12}>
-                                        <span className="font-weight-bold">Date added: </span> {timeConverter(resource.timestamp)}
-                                    </Col>
-                                    <Col xs={12} className="mt-3">
-                                        <span className="font-weight-bold">License: </span> {licenses[licenseMap.get(description.licenseAbbr).id].title}
-                                        <a className="ml-2" rel="license" href={description.license}><img alt="Licencia Creative Commons" style={{ borderWidth: 0 }} src={ description.licenseAbbr != "publicdomain" ? `https://i.creativecommons.org/l/${description.licenseAbbr}/4.0/88x31.png` : `https://licensebuttons.net/l/publicdomain/88x31.png`} /></a>
-                                    </Col>
-                                    <Col xs={12}>
-                                        <span className="font-weight-bold">Language </span> {description.language}
-                                    </Col>
-                                </Row>
+                            <Row>
+                                <Col xs={12}>
+                                    <span className="font-weight-bold">Subject Area: </span> {description.subject}
+                                </Col>
+                                <Col xs={12}>
+                                    <span className="font-weight-bold">Level: </span> {description.educationLevel}
+                                </Col>
+                                <Col xs={12}>
+                                    <span className="font-weight-bold">Material Type: </span> {description.resourceType}
+                                </Col>
+                                <Col xs={12}>
+                                    <span className="font-weight-bold">Author: </span> {description.author}
+                                </Col>
+                                <Col xs={12}>
+                                    <span className="font-weight-bold">Date added: </span> {timeConverter(resource.timestamp)}
+                                </Col>
+                                <Col xs={12} className="mt-3">
+                                    <span className="font-weight-bold">License: </span> {description.license.name}
+                                </Col>
+                                <Col xs={12}>
+                                    <span className="font-weight-bold">Language </span> {description.language}
+                                </Col>
+                            </Row>
                         </Card.Body>
                     </Card >
                 </Col>
